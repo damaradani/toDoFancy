@@ -63,11 +63,9 @@ module.exports = {
            })
     }
 
-
-
-
   },
   signUp: function(req, res){
+    console.log(req.body);
     let plainPassword = req.body.password
     let cekPass = plainPassword.match(/[0-9]/g)
     let cekFormatEmail = validateEmail(req.body.email)

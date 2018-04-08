@@ -6,7 +6,11 @@ const mongoose = require('mongoose')
 const app = express()
 require('dotenv').config()
 
-mongoose.connect('mongodb://localhost/toDoList_db')
+//mongodb local
+// mongoose.connect('mongodb://localhost/toDoList_db')
+
+//mongodb mlab
+mongoose.connect('mongodb://damaradani:12nightmare@ds237669.mlab.com:37669/todolist_db')
 
 // console.log('env', process.env);
 app.use(cors())
