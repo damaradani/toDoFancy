@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>My To Do List</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/toggle-switch.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" ></script>
+  <style>
+    /* Remove the navbar's default rounded borders and increase the bottom margin */
+    .navbar {
+      margin-bottom: 50px;
+      border-radius: 0;
+    }
+
+    /* Remove the jumbotron's default bottom margin */
+     .jumbotron {
+      margin-bottom: 0;
+    }
+
+    .panel-heading {
+      cursor: pointer;
+    }
+
+    .panel-body {
+      height: 150px;
+      overflow: auto;
+    }
+
+    .fb {
+      background-color: #3B5998;
+      color: white;
+      width: 100%;
+    }
+
+    /* Add a gray background color and some padding to the footer */
+    footer {
+      background-color: #f2f2f2;
+      padding: 25px;
+    }
+  </style>
+</head>
+<body>
+
+    <div id="app">
+      <header-navbar @login="login" @logout="logout" @signup="signup" @new_todo="new_todo" :is-Login="isLogin"></header-navbar>
+
+      <div v-if="!toDoLists.length && isLogin" class="jumbotron text-center">
+        <h1>Welcome To My To Do List</h1>
+        <p>Click "Add New To Do" above to start.</p>
+      </div>
+
+      <div v-if="!isLogin" class="jumbotron text-center">
+        <h1>Welcome To My To Do List</h1>
+        <p>Click "Login or Sign Up" above to start.</p>
+      </div>
+
+      <!-- divnya punya app yang bawah -->
+      <todo-content
+        @set_todo="setToDo"
+        @update_todo="updateToDo"
+        @update_todo_status="updateToDoStatus"
+        @delete_todo="deleteToDo"
+        :todo_lists="toDoLists"
+        :edit_todo="editToDo">
+      </todo-content>
+    </div>
+    <script src="vue/header-navbar.js"></script>
+    <script src="vue/toDo-vue.js"></script>
+    <script src="vue/main-vue.js"></script>
+
+</body>
+</html>

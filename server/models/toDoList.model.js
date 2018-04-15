@@ -4,7 +4,7 @@ const Schema = mongoose.Schema
 let toDoListSchema = new Schema({
   title: String,
   content: String,
-  completed: String
+  completed: Boolean
 },{
   timestamps: true
 })

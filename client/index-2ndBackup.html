@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>My To Do List</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/toggle-switch.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" ></script>
+  <style>
+    /* Remove the navbar's default rounded borders and increase the bottom margin */
+    .navbar {
+      margin-bottom: 50px;
+      border-radius: 0;
+    }
+
+    /* Remove the jumbotron's default bottom margin */
+     .jumbotron {
+      margin-bottom: 0;
+    }
+
+    .panel-heading {
+      cursor: pointer;
+    }
+
+    .panel-body {
+      height: 150px;
+      overflow: auto;
+    }
+
+    /* Add a gray background color and some padding to the footer */
+    footer {
+      background-color: #f2f2f2;
+      padding: 25px;
+    }
+  </style>
+</head>
+<body>
+
+    <div id="app">
+      <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">To Do List</a>
+          </div>
+          <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+              <li><a href="#" v-if="isLogin" data-toggle="modal" data-target="#toDoModal">Add New List</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li>
+                <a href="#" v-if="isLogin" @click="logout()">
+                  <span class="glyphicon glyphicon-user"></span>Logout
+                </a>
+                <a href="#" v-else data-toggle="modal" data-target="#loginModal">
+                  <span class="glyphicon glyphicon-user"></span>Login
+                </a>
+              </li>
+              <li v-if="!isLogin">
+                <a href="#" data-toggle="modal" data-target="#signUpModal">
+                  Sign Up
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Modal Login -->
+      <div class="modal fade" id="loginModal" role="dialog">
+        <div class="modal-dialog" style="width:40%;">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Login</h4>
+            </div>
+            <div class="modal-body form-group">
+              <label for="email">Email :</label>
+              <input type="text" class="form-control" id="email">
+              <label for="password">Password</label>
+              <input type="password" class="form-control" id="password">
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" @click="">Login by Facebook</button>
+              <button type="button" class="btn btn-default" @click="login()">Login</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Sign Up -->
+      <div class="modal fade" id="signUpModal" role="dialog">
+        <div class="modal-dialog" style="width:40%;">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Sign Up</h4>
+            </div>
+            <div class="modal-body form-group">
+              <label for="SUname">Name :</label><small id="SUnameCek"></small>
+              <input type="text" v-model="regis_name" class="form-control" id="SUname">
+
+              <label for="SUemail">Email :</label><small id="SUemailCek"></small>
+              <input type="text" v-model="new_email" class="form-control" id="SUemail">
+
+              <label for="SUpassword">Password :</label><small id="SUpasswordCek"></small>
+              <input type="password" v-model="new_password" class="form-control" id="SUpassword">
+
+              <label for="SUconPass">Confirm Password :</label><small id="SUconPassCek"></small>
+              <input type="password" v-model="new_conPass" class="form-control" id="SUconPass">
+            </div>
+            <div class="modal-footer">
+              <button type="button" v-show="isName && isEmail && isPwd && isConPwd" class="btn btn-default" @click="signup()">Sign Up</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Add To Do List -->
+      <div class="modal fade" id="toDoModal" role="dialog">
+        <div class="modal-dialog" style="width:50%;">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Create New To Do</h4>
+            </div>
+            <div class="modal-body form-group">
+              <label for="title">Title :</label>
+              <input type="text" class="form-control" id="title">
+              <label for="content">Details :</label>
+              <textarea class="form-control" rows="4" id="content" style="resize: none;"></textarea>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" @click="newToDo()">Add</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Edit To Do List -->
+      <div class="modal fade" id="editToDoModal" role="dialog" >
+        <div class="modal-dialog" style="width:50%;">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Edit To Do</h4>
+            </div>
+            <div class="modal-body form-group">
+              <label for="editTitle">Title :</label>
+              <input type="text" class="form-control" :value="editToDo.title" id="editTitle">
+              <label for="editContent">Details :</label>
+              <textarea class="form-control" rows="4" id="editContent" :value="editToDo.content" style="resize: none;"></textarea>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" @click="updateToDo(editToDo)">Edit</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- To Do List Item  -->
+      <div class="container" v-if="toDoLists && toDoLists.length">
+        <h2>Your To Do List: </h2>
+        <div class="row">
+          <div class="col-sm-4" v-for="(toDoList, index ) in toDoLists">
+            <div class="panel panel-primary" data-toggle="popover"  title="Click title to edit To Do">
+              <div class="panel-heading" @click="setToDo(toDoList)" data-toggle="modal" data-target="#editToDoModal">
+                <!-- buat hapus to Do List nya belum di bikin -->
+                <button type="button" @click="deleteToDo(toDoList)" data-toggle="popover"  title="Delete To Do" class="close">&times;</button>
+                {{ toDoList.title}}
+              </div>
+              <div class="panel-body" style="overflow: auto;">{{ toDoList.content }}</div>
+              <!-- kalo sempet tambah kapan di bikin ny (created At)  -->
+              <div class="panel-footer text-right">
+                <label class="switch" data-toggle="popover" title="Change Status" >
+                  <input type="checkbox" :id="toDoList._id" @click="updateToDoStatus(toDoList, index)" :checked="toDoList.completed">
+                  <span class="slider round"></span>
+                </label>
+                <!-- <button class="btn btn-default">Ceklist</button> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><br><br>
+
+      <!-- divnya punya app yang bawah -->
+    </div>
+
+    <script>
+      let token = localStorage.getItem('token')
+
+      let vue = new Vue({
+        el: '#app',
+        data: {
+          isLogin: false,
+          // regis_name: '',
+          // new_email: '',
+          // new_password: '',
+          // new_conPass: '',
+          //kondisi apakah pengecekan nama, email dan password sudah sukses
+          // isName: false,
+          // isEmail: false,
+          // isPwd: false,
+          // isConPwd: false,
+          toDoLists:[],
+          editToDo:{}
+        },
+        methods: {
+          //nanti pake payload sama ganti pake facebook
+          //sama liat login dari group project kemaren
+          login: function(){
+            let email = document.querySelector("#email").value
+            let password = document.querySelector("#password").value
+
+            axios.post('http://localhost:3000/sign-in', {password, email})
+            .then(function(response){
+                console.log(response.data);
+                if(response.data.message != 'User Login Succesfully'){
+                  swal({
+                  type: 'error',
+                  title: 'Oops...',
+                  text: 'something wrong!',
+                  })
+                }else{
+                  localStorage.setItem('token', response.data.token);
+                  swal(
+                      'Good job!',
+                      'You log in successfully!',
+                      'success'
+                    ).then(res =>{
+                      window.location.href = 'index.html'
+                    })
+
+                }
+
+            })
+            .catch(function(err){
+              swal({
+               type: 'error',
+               title: 'Oops...',
+               text: 'Email/password wrong!',
+               })
+            })
+          },
+          logout: function(){
+            swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Log out!'
+            }).then(result => {
+              console.log(result);
+            if (result) {
+                swal(
+                'Log out!',
+                'You have been log out.',
+                'success'
+                )
+                localStorage.removeItem('token')
+                window.location.href="index.html"
+            }
+            })
+          },
+          signup: function(){
+            let name = $('#SUname').val()
+            let email = $('#SUemail').val()
+            let password = $('#SUpassword').val()
+            let urlLink = 'http://localhost:3000/sign-up'
+
+            console.log('Name :', name)
+            console.log('Email :', email)
+            console.log('Password :', password)
+
+            axios.post(urlLink, {name, email, password})
+                 .then(function(res){
+                   swal(
+                     'Sign Up!',
+                     'You sign up successfully!',
+                     'success'
+                   ).then((value) => {
+                     window.location.href="index.html"
+                   })
+                 })
+                 .catch(function(err){
+                   console.log(err)
+                   swal({
+                       type: 'error',
+                       title: 'Oops...',
+                       text: 'something wrong!',
+                       })
+                 })
+          },
+          getToDoList: function(){
+            let urlLink = 'http://localhost:3000/toDoList'
+            axios.get(urlLink, {
+              headers: {
+                token
+              }
+            }).then(res =>{
+              console.log(JSON.stringify(res.data, null, 2))
+              this.toDoLists = res.data.toDoList
+              // this
+            }).catch(err => {
+              console.log(err)
+            })
+          },
+          newToDo: function(){
+            let title = document.querySelector('#title').value
+            let content = document.querySelector('#content').value
+            console.log('Judul To DO',title)
+            console.log('Isi Content', content)
+            let urlLink = 'http://localhost:3000/toDoList'
+            axios.post(urlLink,
+              {title, content},
+              {headers: {token}}
+            ).then(res => {
+                swal(
+                  'New To Do!',
+                  'To Do has been added',
+                  'success'
+                ).then((value) => {
+                  window.location.href="index.html"
+                })
+
+            }).catch(err => {
+              console.log(err)
+            })
+
+          },
+          setToDo: function(objData){
+            this.editToDo = objData
+            console.log(objData)
+
+          },
+          updateToDo: function(objData){
+            let toDo_id = objData._id
+            let title = $('#editTitle').val()
+            let content = $('#editContent').val()
+            let urlLink = `http://localhost:3000/toDoList/${toDo_id}`
+            console.log(toDo_id)
+            console.log(editTitle)
+            console.log(editContent)
+
+            axios.put(urlLink, {title, content}, {headers: {token} } )
+                 .then(res => {
+                   console.log(res)
+                   swal(
+                     'Edit To Do!',
+                     'To Do has successfully edited',
+                     'success'
+                   ).then((value) => {
+                     window.location.href="index.html"
+                   })
+                 })
+                 .catch(err => {
+                   swal({
+                      type: 'error',
+                      title: 'Oops...',
+                      text: err,
+                   })
+                 })
+
+          },
+          updateToDoStatus: function(objData, index){
+            let toDo_id = objData._id
+            let toDo_status = $(`#${toDo_id}`).prop('checked')
+            console.log(objData)
+            console.log(index)
+            let urlLink = `http://localhost:3000/toDoList/${toDo_id}/status`
+            axios.put(urlLink, {completed:toDo_status}, {headers: {token} } )
+                 .then(res =>{
+                   console.log(res)
+                   console.log(this.toDoLists)
+                   this.toDoLists[index].completed = toDo_status
+                   // window.location.href="index.html"
+                 })
+                 .catch(err => {
+                   swal({
+                      type: 'error',
+                      title: 'Oops...',
+                      text: err,
+                   })
+                 })
+          },
+          deleteToDo: function(objData){
+            let toDo_id = objData._id
+            let toDo_title = objData.title
+            console.log(toDo_id)
+            swal({
+              title: 'Are you sure?',
+              text: `Do you really gonna delete "${toDo_title}"`,
+              icon: 'warning'
+            }).then(result => {
+
+              if (result) {
+                  let urlLink = `http://localhost:3000/toDoList/${toDo_id}`
+                  axios.delete(urlLink, { headers: {token} } )
+                       .then(res => {
+                           console.log(res)
+                           swal(
+                           'Deleted!',
+                           `${toDo_title} have been deleted.`,
+                           'success'
+                           ).then((value) => {
+                             window.location.href="index.html"
+                           })
+                       })
+                       .catch(err => {
+                           swal({
+                            type: 'error',
+                            title: 'Oops...',
+                            text: err,
+                            })
+                       })
+
+              }
+            })
+
+          }
+
+        },
+        watch:{
+          regis_name: function(){
+            if(this.regis_name.length > 4){
+              $('#SUnameCek').text('')
+              $('#SUname').css({"border-color": "green", "border-solid": "bold", "border-width": "3px"})
+              this.isName = true
+            }else {
+              $('#SUnameCek').text('Name is Required && minimal 4 character').css("color","red")
+              $('#SUname').css({"border-color": "red", "border-solid": "bold", "border-width": "3px"})
+              this.isName = false
+            }
+          },
+          new_email: function(){
+            let email = this.new_email
+            let regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            let checkEmail = regEx.test(String(email).toLowerCase())
+            console.log(checkEmail)
+            if(checkEmail){
+              $('#SUemailCek').text('')
+              $('#SUemail').css({"border-color": "green", "border-solid": "bold", "border-width": "3px"})
+              this.isEmail = true
+            }else{
+              $('#SUemailCek').text('Email Format is Wrong!').css("color","red")
+              $('#SUemail').css({"border-color": "red", "border-solid": "bold", "border-width": "3px"})
+              this.isEmail = false
+            }
+
+          },
+          new_password: function(){
+            let pwd = this.new_password
+            console.log(pwd)
+            if(pwd.length > 6){
+              let numInPwd = pwd.match(/[0-9]/g)
+              if(numInPwd){
+                $('#SUpasswordCek').text('')
+                $('#SUpassword').css({"border-color": "green", "border-solid": "bold", "border-width": "3px"})
+                this.isPwd = true
+              }else{
+                $('#SUpasswordCek').text('Password must contained number!').css("color","red")
+                $('#SUpassword').css({"border-color": "red", "border-solid": "bold", "border-width": "3px"})
+                this.isPwd = false
+              }
+            }else{
+              $('#SUpasswordCek').text('Password minimal 6 digit!').css("color","red")
+              $('#SUpassword').css({"border-color": "red", "border-solid": "bold", "border-width": "3px"})
+              this.isPwd = false
+            }
+          },
+          new_conPass: function(){
+            if(this.new_conPass == this.new_password){
+                $('#SUconPassCek').text("")
+                $('#SUconPass').css({"border-color": "green", "border-solid": "bold", "border-width": "3px"})
+                this.isConPwd = true
+            }else{
+                $('#SUconPassCek').text("password not match").css("color","red")
+                $('#SUconPass').css({"border-color": "red", "border-solid": "bold", "border-width": "3px"})
+                this.isConPwd = false;
+            }
+          }
+        },
+        mounted: function () {
+          this.$nextTick(function () {
+            this.getToDoList()
+          })
+        },
+        created: function() {
+          // console.log('Ini Aapaaan',this.isLogin);
+          if(token){
+            this.getToDoList()
+          }
+
+        }
+
+      })
+
+      //bagusny token di cek dulu ke server valid ga ?
+      if(token){
+        vue.isLogin = true
+      }else{
+        vue.isLogin = false
+      }
+
+    </script>
+
+
+</body>
+</html>

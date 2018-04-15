@@ -39,20 +39,35 @@ module.exports = {
     }else {
       users.findOne({email})
            .then(user =>{
+             if(!user){
+               res.status(406).json({
+                 message: "Email / Password is Wrong"
+               })
+             }else{
+
              bcrypt.compare(password, user.password, function(err, result){
                if(err){
-                 res.status(406).json({
-                   message: "Password is Wrong"
+                 res.status(500).json({
+                   message: "Something went Wrong"
                  })
                }else{
-                 let token = jwt.sign({id:user._id, email:user.email, role:user.role}, pwdtoken)
-                 res.status(200).json({
-                   message: "User Login Succesfully",
-                   user,
-                   token
-                 })
-               }
+                  if(result){
+                    let token = jwt.sign({id:user._id, email:user.email, role:user.role}, pwdtoken)
+                    res.status(200).json({
+                      message: "User Login Succesfully",
+                      user,
+                      token
+                    })
+                  }else{
+                    res.status(406).json({
+                      message: "Password is Wrong"
+                    })
+                  }
+
+                }
+
              })
+           }
            })
            .catch(err =>{
              console.log(err);
@@ -83,9 +98,9 @@ module.exports = {
                  res.status(406).json({
                    message: "Email Format is wrong"
                  })
-               }else if(plainPassword.length < 6){
+               }else if(plainPassword.length < 5){
                  res.status(406).json({
-                   message: "password minimal 6"
+                   message: "password minimal 5"
                  })
                }else if (cekPass === null) {
                  res.status(406).json({
@@ -141,7 +156,7 @@ saveUser = function(objUser, req, res){
     }else{
       res.status(201).json({
         message: `User has Succesfully added`,
-        input: user
+        user: user
       })
     }
   })

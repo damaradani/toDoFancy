@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <input type="text" name="email" id="email">
+      <input type="password" name="password" id="password">
+      <button value="Login" onclick="login()" >Login</button>
+      <button v-on:click="getUser()">get User</button>
+      <button v-on:click="getToDoList()">get toDoList</button>
+      <!-- <div v-if="users && users.length">
+        <div v-for="user in users">
+          <h3>{{ user }}</h3>
+        </div>
+      </div> -->
+
+      <div v-if="toDoLists && toDoLists.length">
+        <div v-for="toDoList in toDoLists">
+          <h3>{{ toDoList }}</h3>
+        </div>
+      </div>
+
+    </div>
+  <script>
+    function login(){
+      let email = document.querySelector("#email").value
+      let password = document.querySelector("#password").value
+
+      console.log(email)
+      console.log(password)
+      axios.post('http://localhost:3000/sign-in', {password, email})
+      .then(function(response){
+          console.log(response.data);
+          if(response.data.message != 'User Login Succesfully'){
+              alert(response.data.message)
+          }else{
+              console.log(response.data.message);
+              localStorage.setItem('token', response.data.token);
+              //window.location.href = 'home.html'
+          }
+
+          // alert(response.data.token)
+          // localStorage.setItem('token', response.data.token)
+      })
+      .catch(function(err){
+        console.log(err);
+      })
+    }
+
+    // function getUser() {
+    //    let token = localStorage.getItem('token')
+    //    alert(token)
+    //    axios.get('http://localhost:3000/users',{
+    //        headers: {
+    //            'token': token
+    //        }
+    //    }).then(function(res){
+    //        alert(JSON.stringify(res))
+    //    }).catch(function(err){
+    //      console.log(err);
+    //    })
+    // }
+
+    // function getToDoList(){
+    //   let token = localStorage.getItem('token')
+    //
+    //   axios.get('http://localhost:3000/toDoList', {
+    //     headers: {
+    //       token
+    //     }
+    //   }).then(function(res){
+    //     alert(JSON.stringify(res))
+    //   }).catch(function(err){
+    //     alert(err)
+    //   })
+    // }
+
+    new Vue({
+      el: '#app',
+      data : {
+        users:[],
+        toDoLists:[]
+      },
+      methods:{
+        getUser: function(){
+          let token = localStorage.getItem('token')
+          console.log(token)
+          if(token){
+            axios.get('http://localhost:3000/users',{
+                headers: {
+                    'token': token
+                }q
+            }).then((res) =>{
+                console.log(JSON.stringify(res.data.user, null, 2))
+                console.log('Data Users vue', this.users);
+                this.users.splice(0, this.users.length, res.data.user)
+            }).catch((err) =>{
+              console.log(err);
+            })
+          }else{
+            alert('U need to Login')
+          }
+
+        },
+        getToDoList: function(){
+          let token = localStorage.getItem('token')
+
+          axios.get('http://localhost:3000/toDoList', {
+            headers: {
+              token
+            }
+          }).then((res) =>{
+            console.log(JSON.stringify(res.data, null, 2))
+            this.toDoLists.splice(0, this.toDoLists.length, res.data.toDoList)
+            // this
+          }).catch((err) =>{
+            alert(err)
+          })
+        }
+      }
+
+    })
+  </script>
+  </body>
+
+</html>

@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const toDoList = require('../models/toDoList.model.js')
 const users = require('../models/user.model')
-const ObjectID = require('mongodb').ObjectID
 const pwdtoken = process.env.pwdtoken;
 
 module.exports = {
@@ -27,7 +26,7 @@ module.exports = {
     let decoded = jwt.verify(token, pwdtoken)
     let userId = decoded.id
 
-    users.findOne({_id:ObjectID(userId)})
+    users.findOne({_id:userId})
          .populate('toDoList')
          .exec()
          .then(user =>{
@@ -50,7 +49,7 @@ module.exports = {
     let newToDo = new toDoList({
       title: req.body.title,
       content: req.body.content,
-      completed: "false"
+      completed: false
     })
 
     newToDo.save((err, toDoList) =>{
@@ -60,7 +59,7 @@ module.exports = {
         })
       }else{
         // console.log('To Do List',toDoList);
-        users.update({_id:ObjectID(userId)}, {$addToSet:{toDoList:toDoList._id}})
+        users.update({_id:userId}, {$addToSet:{toDoList:toDoList._id}})
              .then(user =>{
                  res.status(201).json({
                    message: "new ToDoList has been added",
@@ -84,7 +83,7 @@ module.exports = {
     let toDoListId = req.params.ToDoId
     let completed = req.body.completed
 
-    toDoList.update({_id:ObjectID(toDoListId)}, {$set:{completed}})
+    toDoList.update({_id:toDoListId}, {$set:{completed}})
             .then(result =>{
               res.status(200).json({
                 message: "Update Status ToDoList Success",
@@ -106,7 +105,7 @@ module.exports = {
     // console.log('content', content);
 
     toDoList.update(
-      {_id:ObjectID(toDoListId)},
+      {_id:toDoListId},
       {$set:{title, content}}
     )
             .then(result =>{
@@ -129,12 +128,12 @@ module.exports = {
     let userId = decoded.id
     let toDoListId = req.params.ToDoId
 
-    toDoList.remove({_id:ObjectID(toDoListId)})
+    toDoList.remove({_id:toDoListId})
             .then(result => {
                 console.log(result);
                 users.update(
-                  {_id:ObjectID(userId)},
-                  {$pull:{toDoList:ObjectID(toDoListId)}}
+                  {_id:userId},
+                  {$pull:{toDoList:toDoListId}}
                 )
                 .then(result =>{
                   res.status(200).json({
