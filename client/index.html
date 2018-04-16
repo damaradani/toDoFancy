@@ -49,6 +49,7 @@
   </style>
 </head>
 <body>
+    <script src="lib/fb_login.js"></script>
 
     <div id="app">
       <header-navbar @login="login" @logout="logout" @signup="signup" @new_todo="new_todo" :is-Login="isLogin"></header-navbar>
@@ -73,6 +74,7 @@
         :edit_todo="editToDo">
       </todo-content>
     </div>
+
     <script src="vue/header-navbar.js"></script>
     <script src="vue/toDo-vue.js"></script>
     <script src="vue/main-vue.js"></script>

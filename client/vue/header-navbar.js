@@ -43,17 +43,23 @@ Vue.component('header-navbar', {
           </div>
           <div class="modal-body form-group">
             <label for="email">Email :</label>
-            <input type="text" class="form-control" id="email">
+            <input type="text" class="form-control" v-model="logins.email" id="email">
             <label for="password">Password</label>
-            <input type="password" class="form-control" id="password">
+            <input type="password" class="form-control" v-model="logins.password" id="password">
 
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" style="width:100%;" @click="login()">Login</button>
             <br><p class="text-center" style="margin-top:10px;">Or Login with Social Media</p>
-            <button type="button" class="btn fb" @click="">
+            <div class="text-center">
+              <div scope="public_profile,email" onlogin="checkLoginState();"
+              class="fb-login-button" data-max-rows="1" data-size="large"
+              data-button-type="login_with" data-show-faces="false"
+              data-auto-logout-link="false" data-use-continue-as="false"></div>
+            </div>
+            <!--<button type="button" class="btn fb" @click="">
               <i class="fa fa-facebook fa-fw"></i> Login with Facebook
-            </button>
+            </button>-->
           </div>
         </div>
       </div>
@@ -115,6 +121,10 @@ Vue.component('header-navbar', {
   props: ['is-Login'],
   data: function(){
     return {
+      logins:{
+        email:'',
+        password:''
+      },
       regis_name: '',
       new_email: '',
       new_password: '',
@@ -128,8 +138,10 @@ Vue.component('header-navbar', {
   },
   methods: {
     login: function() {
-      let email = $("#email").val()
-      let password = $("#password").val()
+      // let email = $("#email").val()
+      // let password = $("#password").val()
+      let email = this.logins.email
+      let password = this.logins.password
       let payload = {
         email,
         password

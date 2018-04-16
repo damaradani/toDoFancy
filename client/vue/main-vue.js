@@ -31,7 +31,7 @@ let vue = new Vue({
                 'You log in successfully!',
                 'success'
               ).then(res =>{
-                window.location.href = 'index.html'
+                window.location.href = 'https://7d1ec124.ngrok.io/' //'index.html'
               })
 
           }
@@ -61,7 +61,7 @@ let vue = new Vue({
           'success'
           )
           localStorage.removeItem('token')
-          window.location.href="index.html"
+          window.location.href= "https://7d1ec124.ngrok.io/" //"index.html"
       }
       })
     },
@@ -123,7 +123,7 @@ let vue = new Vue({
             'To Do has been added',
             'success'
           ).then((value) => {
-            window.location.href="index.html"
+            window.location.href= "https://7d1ec124.ngrok.io/" //"index.html"
           })
 
       }).catch(err => {
@@ -156,7 +156,7 @@ let vue = new Vue({
                'To Do has successfully edited',
                'success'
              ).then((value) => {
-               window.location.href="index.html"
+               window.location.href= "https://7d1ec124.ngrok.io/" //"index.html"
              })
            })
            .catch(err => {
@@ -212,7 +212,7 @@ let vue = new Vue({
                      `${toDo_title} have been deleted.`,
                      'success'
                      ).then((value) => {
-                       window.location.href="index.html"
+                       window.location.href= "https://7d1ec124.ngrok.io/" //"index.html"
                      })
                  })
                  .catch(err => {

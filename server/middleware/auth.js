@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken')
 const users = require('../models/user.model')
-const ObjectID = require('mongodb').ObjectID
 const pwdtoken = process.env.pwdtoken
 
 module.exports = {
@@ -10,7 +9,7 @@ module.exports = {
     // console.log(decoded.id);
 
     if(token){
-      users.findOne({_id:ObjectID(decoded.id)})
+      users.findOne({_id:decoded.id})
            .then(users => {
              // console.log(users);
              if(!users){
@@ -38,7 +37,7 @@ module.exports = {
     // console.log(decoded.id);
 
     if(token){
-      users.findOne({_id:ObjectID(decoded.id)})
+      users.findOne({_id:decoded.id})
            .then(users => {
              // console.log(users);
              if(!users){

@@ -4,7 +4,7 @@ const users = require('../models/user.model')
 const ObjectID = require('mongodb').ObjectID
 const saltRounds = 10
 const pwdtoken = process.env.pwdtoken
-
+const FB = require('fb');
 
 module.exports = {
   getIndex: function(req, res){
@@ -128,6 +128,75 @@ module.exports = {
              message: err
            })
          })
+  },
+  fb_signin: function(req, res){
+    let token = req.headers.tokenfb
+    console.log(token)
+    FB.setAccessToken(token)
+    FB.api('/me', {
+      fields: ['email', 'name']
+    },
+    function (response) {
+      console.log(response)
+      users.findOne({
+        email: response.email
+      })
+      .then(user => {
+        console.log(user)
+        if (user) {
+          console.log('found')
+          let token = jwt.sign({id:user._id, email:user.email, role:user.role}, pwdtoken)
+
+          res.status(200).send({
+            message: 'Account already registered, continue to login...',
+            token: token
+          })
+        } else {
+          bcrypt.hash(response.email, saltRounds, function(err, hash){
+            //console.log(hash);
+
+            let newUser = {
+              name: response.name,
+              email: response.email,
+              password: hash
+            }
+
+            saveUser(newUser, req, res)
+
+          })
+
+        }
+      })
+      .catch(err => {
+        console.log(err)
+        // let newUser = new User({
+        //   name: response.name,
+        //   email: response.email,
+        //   birthday: response.birthday,
+        //   gender: response.gender
+        // })
+        //
+        // newUser.save()
+        // .then(user => {
+        //   console.log('save')
+        //   let token = jwt.sign({
+        //     token: user
+        //   }, secret)
+        //
+        //   res.status(201).send({
+        //     message: 'Register new account success, continue to login...',
+        //     token: token
+        //   })
+        // })
+        // .catch(error => {
+        //   console.log('error login failed')
+        //   res.status(400).send({
+        //     message: 'Login failed!',
+        //     error: error.message
+        //   })
+        // })
+      })
+    })
   }
 
 }
@@ -154,9 +223,11 @@ saveUser = function(objUser, req, res){
         message: err
       })
     }else{
+      let token = jwt.sign({id:user._id, email:user.email, role:user.role}, pwdtoken)
       res.status(201).json({
         message: `User has Succesfully added`,
-        user: user
+        user: user,
+        token
       })
     }
   })
