@@ -2,8 +2,11 @@ function statusChangeCallback(response) {
   console.log('statusChangeCallback', response);
 
   if (response.status === 'connected') {
-    // let urlLink = 'http://server-taskfan.barestu.com/user/fb-login'
-    let urlLink = 'http://localhost:3000/fb-signin'
+    //heroku server
+    let urlLink = 'https://todolist-dnd.herokuapp.com/fb-signin'
+
+    //local server
+    // let urlLink = 'http://localhost:3000/fb-signin'
     axios.post(urlLink, {}, {
       headers: {
         tokenFB: response.authResponse.accessToken
@@ -13,7 +16,7 @@ function statusChangeCallback(response) {
       console.log('Logged in', response)
       localStorage.setItem('token', response.data.token)
       // let indexUrl = 'https://taskfan-201211.firebaseapp.com/main.html'
-      window.location.href = 'https://7d1ec124.ngrok.io/' // ini sementara
+      window.location.href = 'https://todo-list-1174b.firebaseapp.com/' // ini sementara
     })
     .catch(err => {
       console.log('Login FB failed', err)

@@ -12,10 +12,11 @@ let vue = new Vue({
     login: function(payload){
       let email = payload.email
       let password = payload.password
-
+      let urlLink = 'https://todolist-dnd.herokuapp.com/sign-in' //heroku server
+      // let urlLink = 'http://localhost:3000/sign-in' //local server
       console.log(email)
       console.log(password)
-      axios.post('http://localhost:3000/sign-in', {password, email})
+      axios.post(urlLink, {password, email})
       .then(function(response){
           console.log(response.data);
           if(response.data.message != 'User Login Succesfully'){
@@ -31,7 +32,7 @@ let vue = new Vue({
                 'You log in successfully!',
                 'success'
               ).then(res =>{
-                window.location.href = 'https://7d1ec124.ngrok.io/' //'index.html'
+                window.location.href = 'https://todo-list-1174b.firebaseapp.com/' //'index.html'
               })
 
           }
@@ -61,7 +62,7 @@ let vue = new Vue({
           'success'
           )
           localStorage.removeItem('token')
-          window.location.href= "https://7d1ec124.ngrok.io/" //"index.html"
+          window.location.href= "https://todo-list-1174b.firebaseapp.com/" //"index.html"
       }
       })
     },
@@ -69,7 +70,8 @@ let vue = new Vue({
       let name = payload.name
       let email = payload.email
       let password = payload.password
-      let urlLink = 'http://localhost:3000/sign-up'
+      let urlLink = 'https://todolist-dnd.herokuapp.com/sign-up' //heroku server
+      // let urlLink = 'http://localhost:3000/sign-up' //local server
 
       console.log('Name :', name)
       console.log('Email :', email)
@@ -82,7 +84,7 @@ let vue = new Vue({
                'You sign up successfully!',
                'success'
              ).then((value) => {
-               window.location.href="index.html"
+               window.location.href="https://todo-list-1174b.firebaseapp.com/"
              })
            })
            .catch(function(err){
@@ -95,13 +97,15 @@ let vue = new Vue({
            })
     },
     getToDoList: function(){
-      let urlLink = 'http://localhost:3000/toDoList'
+      let urlLink = 'https://todolist-dnd.herokuapp.com/toDoList' //heroku server
+      // let urlLink = 'http://localhost:3000/toDoList' //local server
+
       axios.get(urlLink, {
         headers: {
           token
         }
       }).then(res =>{
-        console.log(JSON.stringify(res.data, null, 2))
+        //console.log(JSON.stringify(res.data, null, 2))
         this.toDoLists = res.data.toDoList
         // this
       }).catch(err => {
@@ -111,7 +115,8 @@ let vue = new Vue({
     new_todo: function(payload){
       let title = payload.title
       let content = payload.content
-      let urlLink = 'http://localhost:3000/toDoList'
+      let urlLink = 'https://todolist-dnd.herokuapp.com/toDoList' //heroku server
+      // let urlLink = 'http://localhost:3000/toDoList' //local server
       console.log(payload);
       console.log('Judul To DO',title)
       console.log('Isi Content', content)
@@ -123,7 +128,7 @@ let vue = new Vue({
             'To Do has been added',
             'success'
           ).then((value) => {
-            window.location.href= "https://7d1ec124.ngrok.io/" //"index.html"
+            window.location.href= "https://todo-list-1174b.firebaseapp.com/" //"index.html"
           })
 
       }).catch(err => {
@@ -143,7 +148,8 @@ let vue = new Vue({
       let toDo_id = payload.toDo_id
       let title = payload.title
       let content = payload.content
-      let urlLink = `http://localhost:3000/toDoList/${toDo_id}`
+      let urlLink = `https://todolist-dnd.herokuapp.com/toDoList/${toDo_id}` //heroku server
+      // let urlLink = `http://localhost:3000/toDoList/${toDo_id}` //local server
       console.log(payload)
       console.log(title)
       console.log(content)
@@ -156,7 +162,7 @@ let vue = new Vue({
                'To Do has successfully edited',
                'success'
              ).then((value) => {
-               window.location.href= "https://7d1ec124.ngrok.io/" //"index.html"
+               window.location.href= "https://todo-list-1174b.firebaseapp.com/" //"index.html"
              })
            })
            .catch(err => {
@@ -172,7 +178,8 @@ let vue = new Vue({
       let toDo_id = payload._id
       let toDo_status = payload.toDo_status
       let index = payload.index
-      let urlLink = `http://localhost:3000/toDoList/${toDo_id}/status`
+      let urlLink = `https://todolist-dnd.herokuapp.com/toDoList/${toDo_id}/status` //heroku server
+      // let urlLink = `http://localhost:3000/toDoList/${toDo_id}/status` //local server
       // console.log(toDo_id)
       // console.log(toDo_status)
 
@@ -203,7 +210,8 @@ let vue = new Vue({
       }).then(result => {
 
         if (result) {
-            let urlLink = `http://localhost:3000/toDoList/${toDo_id}`
+            let urlLink = `https://todolist-dnd.herokuapp.com/toDoList/${toDo_id}` //heroku server
+            // let urlLink = `http://localhost:3000/toDoList/${toDo_id}` //local server
             axios.delete(urlLink, { headers: {token} } )
                  .then(res => {
                      console.log(res)
@@ -212,7 +220,7 @@ let vue = new Vue({
                      `${toDo_title} have been deleted.`,
                      'success'
                      ).then((value) => {
-                       window.location.href= "https://7d1ec124.ngrok.io/" //"index.html"
+                       window.location.href= "https://todo-list-1174b.firebaseapp.com/" //"index.html"
                      })
                  })
                  .catch(err => {
